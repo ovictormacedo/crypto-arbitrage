@@ -44,6 +44,7 @@ async function app () {
     for (let i = 0; i < numExchanges; i++) {
         if (!notSupportedExchanges.includes(exchanges[i])) {
             try {
+                console.log("Scanning "+exchanges[i]);
                 let exchange = eval("new ccxt."+exchanges[i]+"();");
                 await exchange.loadMarkets().catch(error => console.log(error));
                 let symbols = exchange.symbols;
@@ -51,13 +52,7 @@ async function app () {
                 let pairs = await pair.allPairs(symbols, exchange);
                 let paths = pair.generatePaths(pairs);
                 let pathProfits = operationsSimulator.calculatePathProfits(paths, pairs, 1000, true);
-                pathProfits.forEach(el => {
-                    if (el.variation > 0.2) {
-                        console.log(el);
-                    }
-                });
-                //console.log("Alerting profits: "+await telegram.alertProfit(pathProfits));
-                //await new Promise (resolve => setTimeout (resolve, 200))
+                console.log("Alerting profits: "+await telegram.alertProfit(pathProfits));
             } catch(exception) {
                 console.log(exchanges[i]+" not supported");
             }
