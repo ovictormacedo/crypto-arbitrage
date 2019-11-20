@@ -9,7 +9,7 @@ async function app () {
     let exchanges = ccxt.exchanges;
     exchanges = [
         'bitfinex', 'binance', 'coinbase',
-        'poloniex', 'hitbtc'
+        'poloniex'
     ];
     let numExchanges = exchanges.length;
     let notSupportedExchanges = [
