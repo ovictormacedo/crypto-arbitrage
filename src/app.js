@@ -8,7 +8,7 @@ const ticker = require('./controllers/Tickers');
 async function app () {
     let exchanges = ccxt.exchanges;
     exchanges = [
-        'bitfinex', 'binance', 'coinbase',
+        'bitfinex', 'binance',
         'poloniex'
     ];
     let numExchanges = exchanges.length;
