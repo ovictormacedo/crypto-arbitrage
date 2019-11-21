@@ -8,6 +8,7 @@
     "ccxt": "^1.19.58",
     "delay": "^4.3.0",
     "dotenv": "^8.2.0",
+    "forever": "^1.0.0",
     "node-telegram-bot-api": "^0.40.0",
     "query-string": "^6.9.0"
   },
