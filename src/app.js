@@ -9,7 +9,8 @@ async function app () {
     let exchanges = ccxt.exchanges;
     exchanges = [
         'bitfinex', 'binance',
-        'poloniex'
+        'poloniex', 'hitbtc',
+        'coinbase'
     ];
     let numExchanges = exchanges.length;
     let notSupportedExchanges = [
@@ -47,17 +48,39 @@ async function app () {
                 console.log("Scanning "+exchanges[i]);
                 let exchange = eval("new ccxt."+exchanges[i]+"();");
                 await exchange.loadMarkets().catch(error => console.log(error));
-                let symbols = exchange.symbols;
-            
-                let pairs = await pair.allPairs(symbols, exchange);
+                let pairs = await pair.allPairs(exchange);
                 let paths = pair.generatePaths(pairs);
-                let pathProfits = operationsSimulator.calculatePathProfits(paths, pairs, 1000, true);
+                let pathProfits = await operationsSimulator.calculatePathProfits(paths, pairs, 1000, true);
                 console.log("Alerting profits: "+await telegram.alertProfit(pathProfits));
             } catch(exception) {
                 console.log(exchanges[i]+" not supported");
             }
         }
     }
+
+    for (let i = 0; i < numExchanges; i++)
+        for (let j = 0; j < numExchanges; j++) {
+            if (!notSupportedExchanges.includes(exchanges[i]) 
+                && !notSupportedExchanges.includes(exchanges[j])) {
+                try {
+                    if (i != j) {
+                        console.log("Scanning "+exchanges[i]);
+                        console.log("Scanning "+exchanges[j]);
+
+                        let exchange1 = eval("new ccxt."+exchanges[i]+"();");
+                        let exchange2 = eval("new ccxt."+exchanges[j]+"();");
+                        
+                        await exchange1.loadMarkets().catch(error => console.log(error));
+                        await exchange2.loadMarkets().catch(error => console.log(error));
+                        
+                        let profits = await operationsSimulator.calculateInterExchangeProfits(exchange1, exchange2);
+                        console.log("Alerting profits: "+await telegram.alertProfit(profits));
+                    }
+                } catch(exception) {
+                    console.log(exchanges[i]+" not supported");
+                }
+            }
+        }
 }
 
 app();

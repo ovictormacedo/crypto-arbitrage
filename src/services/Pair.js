@@ -1,8 +1,9 @@
 const orderBook = require('./OrderBook');
 const ticker = require('./Tickers');
 
-exports.allPairs = async (symbols, exchange) => {
+exports.allPairs = async (exchange) => {
     var pairs = {};
+    let symbols = exchange.symbols;
     let numSymbols = symbols.length;
     let tickers = await ticker.getTickers(exchange);
     for (let i = 0; i < numSymbols; i++) {
@@ -17,8 +18,6 @@ exports.allPairs = async (symbols, exchange) => {
             operation: 'sell',
             price: tickers[symbols[i]].bid,
             exchange: exchange.name,
-            bidvolume: tickers[symbols[i]].bidVolume,
-            askvolume: tickers[symbols[i]].askVolume,
         };//Store the inverted pair and operation 
         pairs[aux[1]+'/'+aux[0]] = {
             symbol: symbols[i],
@@ -29,8 +28,6 @@ exports.allPairs = async (symbols, exchange) => {
             operation: 'buy',
             price: tickers[symbols[i]].ask,
             exchange: exchange.name,
-            bidvolume: tickers[symbols[i]].bidVolume,
-            askvolume: tickers[symbols[i]].askVolume,
         };
     }
     return pairs;
@@ -59,4 +56,26 @@ exports.generatePaths = (pairs) => {
         }
     }
     return newPairs;
+}
+
+exports.pairs = async (exchange) => {
+    var pairs = {};
+    let symbols = exchange.symbols;
+    let numSymbols = symbols.length;
+    let tickers = await ticker.getTickers(exchange);
+    for (let i = 0; i < numSymbols; i++) {
+        let aux = symbols[i].split("/");
+        //Store the pair and operation 
+        pairs[aux[0]+'/'+aux[1]] = {
+            symbol: symbols[i],
+            base: aux[0],
+            quote: aux[1],
+            first: aux[0],
+            second: aux[1],
+            operation: 'sell',
+            price: tickers[symbols[i]].bid,
+            exchange: exchange.name,
+        };
+    }
+    return pairs;
 }

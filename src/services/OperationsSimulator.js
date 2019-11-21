@@ -1,3 +1,5 @@
+const pair = require('./Pair');
+
 exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
     if (path.firstPair.price > 0 && path.secondPair.price > 0 && direct.price > 0) {
         let cash = amount;
@@ -89,3 +91,31 @@ exports.calculatePathProfits = (paths, pairs, amount, seeOperations = false) => 
     return response;
 }
 
+exports.calculateInterExchangeProfits = async (exchange1, exchange2) => {
+    let response = [];
+
+    let pairs1 = await pair.pairs(exchange1);
+    let pairs2 = await pair.pairs(exchange2);
+
+    let keys1 = Object.keys(pairs1);
+    let numPairs1 = keys1.length;
+    let keys2 = Object.keys(pairs2);
+    let numPairs2 = keys2.length;
+
+    for (let i = 0; i < numPairs1; i++)
+        for (let j = 0; j < numPairs2; j++) {
+            if (keys1[i] == keys2[j] 
+                && pairs1[keys1[i]].price > 0
+                && pairs2[keys2[j]].price > 0) {
+                response[keys1[i]] = {
+                    "from": exchange1.name,
+                    "to": exchange2.name,
+                    "priceFrom": pairs1[keys1[i]].price,
+                    "priceTo": pairs2[keys2[j]].price,
+                    "spread": pairs2[keys2[j]].price - pairs1[keys1[i]].price,
+                    "variation": (pairs2[keys2[j]].price/pairs1[keys1[i]].price-1)*100
+                }
+            }
+        }
+    return response;
+}
