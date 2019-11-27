@@ -1,4 +1,5 @@
 const pair = require('./Pair');
+require('dotenv').config();
 
 exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
     if (path.firstPair.price > 0 && path.secondPair.price > 0 && direct.price > 0) {
@@ -15,12 +16,18 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
             if (path.secondPair.operation == 'sell')
                 cash = cash*path.secondPair.price;
         
-        let directCash = 0;
         if (direct.operation == 'buy')
-            directCash = cash/direct.price;
+            cash = cash/direct.price;
         else
             if (direct.operation == 'sell')
-                directCash = cash*direct.price;
+                cash = cash*direct.price;
+                
+        // let directCash = 0;
+        // if (direct.operation == 'buy')
+        //     directCash = cash/direct.price;
+        // else
+        //     if (direct.operation == 'sell')
+        //         directCash = cash*direct.price;
         
         if (seeOperations) {
             return {
@@ -30,23 +37,35 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
                             "operation": path.firstPair.operation,
                             "price": path.firstPair.price,
                             "exchange": path.firstPair.exchange,
+                            "from": path.firstPair.first,
+                            "to": path.firstPair.second,
                         },
                         "second": {
                             "symbol": path.secondPair.symbol,
                             "operation": path.secondPair.operation,
                             "price": path.secondPair.price,
                             "exchange": path.secondPair.exchange,
+                            "from": path.secondPair.first,
+                            "to": path.secondPair.second,
+                        },
+                        "third": {
+                            "symbol": direct.symbol,
+                            "operation": direct.operation,
+                            "price": direct.price,
+                            "exchange": direct.exchange,
+                            "from": direct.first,
+                            "to": direct.second,
                         }
                     },
                     "cash": amount.toFixed(10), 
-                    "simulated": directCash.toFixed(10),
-                    "variation": (directCash.toFixed(10)/amount.toFixed(10)-1)*100
+                    "simulated": cash.toFixed(10),
+                    "variation": (cash.toFixed(10)/amount.toFixed(10)-1)*100
                 };
         } else {
             return {
                 "cash": amount.toFixed(10), 
-                "simulated": directCash.toFixed(10),
-                "variation": (directCash.toFixed(10)/amount.toFixed(10)-1)*100
+                "simulated": cash.toFixed(10),
+                "variation": (cash.toFixed(10)/amount.toFixed(10)-1)*100
             };
         }
     } else {
@@ -58,13 +77,24 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
                         "operation": path.firstPair.operation,
                         "price": path.firstPair.price,
                         "exchange": path.firstPair.exchange,
-                        
+                        "from": path.firstPair.first,
+                        "to": path.firstPair.second,
                     },
                     "second": {
                         "symbol": path.secondPair.symbol,
                         "operation": path.secondPair.operation,
                         "price": path.secondPair.price,
                         "exchange": path.secondPair.exchange,
+                        "from": path.firstPair.first,
+                        "to": path.firstPair.second,
+                    },
+                    "third": {
+                        "symbol": direct.symbol,
+                        "operation": direct.operation,
+                        "price": direct.price,
+                        "exchange": direct.exchange,
+                        "from": direct.first,
+                        "to": direct.second,
                     }
                 },
                 "cash": amount.toFixed(10), 
@@ -85,6 +115,8 @@ exports.calculatePathProfits = (paths, pairs, amount, seeOperations = false) => 
     for (let i = 0; i < numPaths; i++) {
         let symbol = paths[i].secondPair.second+'/'+paths[i].firstPair.first;
         let operation = this.calculatePathProfit(paths[i], pairs[symbol], amount, seeOperations);
+        //First filter to check whether the operation is profitable or not
+        //Still not considering exchange rates 
         if (operation.simulated >= amount)
             response.push(operation);
     }

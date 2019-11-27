@@ -40,7 +40,6 @@ exports.generatePaths = (pairs) => {
 
     for (let i = 0; i < numPairs; i++) {
         for (let j = 0; j < numPairs; j++) {
-            //console.log(pairs[keys[i]].second+'/'+pairs[keys[j]].first);
             //Checks if the two pairs are transitive (it must be)
             if (pairs[keys[i]].second == pairs[keys[j]].first 
                 //Checks if the pairs are not symmetric (it must not to be)
