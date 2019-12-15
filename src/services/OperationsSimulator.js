@@ -21,13 +21,6 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
         else
             if (direct.operation == 'sell')
                 cash = cash*direct.price;
-                
-        // let directCash = 0;
-        // if (direct.operation == 'buy')
-        //     directCash = cash/direct.price;
-        // else
-        //     if (direct.operation == 'sell')
-        //         directCash = cash*direct.price;
         
         if (seeOperations) {
             return {
@@ -36,7 +29,7 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
                             "symbol": path.firstPair.symbol,
                             "operation": path.firstPair.operation,
                             "price": path.firstPair.price,
-                            "exchange": path.firstPair.exchange,
+                            "exchange": path.firstPair.exchange.toLowerCase(),
                             "from": path.firstPair.first,
                             "to": path.firstPair.second,
                         },
@@ -44,7 +37,7 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
                             "symbol": path.secondPair.symbol,
                             "operation": path.secondPair.operation,
                             "price": path.secondPair.price,
-                            "exchange": path.secondPair.exchange,
+                            "exchange": path.secondPair.exchange.toLowerCase(),
                             "from": path.secondPair.first,
                             "to": path.secondPair.second,
                         },
@@ -52,7 +45,7 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
                             "symbol": direct.symbol,
                             "operation": direct.operation,
                             "price": direct.price,
-                            "exchange": direct.exchange,
+                            "exchange": direct.exchange.toLowerCase(),
                             "from": direct.first,
                             "to": direct.second,
                         }
@@ -76,7 +69,7 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
                         "symbol": path.firstPair.symbol,
                         "operation": path.firstPair.operation,
                         "price": path.firstPair.price,
-                        "exchange": path.firstPair.exchange,
+                        "exchange": path.firstPair.exchange.toLowerCase(),
                         "from": path.firstPair.first,
                         "to": path.firstPair.second,
                     },
@@ -84,7 +77,7 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
                         "symbol": path.secondPair.symbol,
                         "operation": path.secondPair.operation,
                         "price": path.secondPair.price,
-                        "exchange": path.secondPair.exchange,
+                        "exchange": path.secondPair.exchange.toLowerCase(),
                         "from": path.firstPair.first,
                         "to": path.firstPair.second,
                     },
@@ -92,7 +85,7 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
                         "symbol": direct.symbol,
                         "operation": direct.operation,
                         "price": direct.price,
-                        "exchange": direct.exchange,
+                        "exchange": direct.exchange.toLowerCase(),
                         "from": direct.first,
                         "to": direct.second,
                     }
@@ -123,7 +116,7 @@ exports.calculatePathProfits = (paths, pairs, amount, seeOperations = false) => 
     return response;
 }
 
-exports.calculateInterExchangeProfits = async (exchange1, exchange2) => {
+exports.calculateInterExchangeProfits = async (exchange1, exchange2, exchangeId1, exchangeId2) => {
     let response = [];
 
     let pairs1 = await pair.pairs(exchange1);
@@ -140,8 +133,8 @@ exports.calculateInterExchangeProfits = async (exchange1, exchange2) => {
                 && pairs1[keys1[i]].price > 0
                 && pairs2[keys2[j]].price > 0) {
                 response[keys1[i]] = {
-                    "from": exchange1.name,
-                    "to": exchange2.name,
+                    "from": exchangeId1,
+                    "to": exchangeId2,
                     "priceFrom": pairs1[keys1[i]].price,
                     "priceTo": pairs2[keys2[j]].price,
                     "spread": pairs2[keys2[j]].price - pairs1[keys1[i]].price,

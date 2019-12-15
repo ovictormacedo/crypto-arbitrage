@@ -1,7 +1,7 @@
-const orderBook = require('./OrderBook');
 const ticker = require('./Tickers');
+const config = require('../config');
 
-exports.allPairs = async (exchange) => {
+exports.allPairs = async (exchange, exchangeId) => {
     var pairs = {};
     let symbols = exchange.symbols;
     let numSymbols = symbols.length;
@@ -17,7 +17,7 @@ exports.allPairs = async (exchange) => {
             second: aux[1],
             operation: 'sell',
             price: tickers[symbols[i]].bid,
-            exchange: exchange.name,
+            exchange: exchangeId,
         };//Store the inverted pair and operation 
         pairs[aux[1]+'/'+aux[0]] = {
             symbol: symbols[i],
@@ -27,7 +27,7 @@ exports.allPairs = async (exchange) => {
             second: aux[0],
             operation: 'buy',
             price: tickers[symbols[i]].ask,
-            exchange: exchange.name,
+            exchange: exchangeId,
         };
     }
     return pairs;
@@ -40,6 +40,10 @@ exports.generatePaths = (pairs) => {
 
     for (let i = 0; i < numPairs; i++) {
         for (let j = 0; j < numPairs; j++) {
+            //Check if the list of preferred currencies contains the currency
+            if (!config.CURRENCIES.includes(pairs[keys[i]].first))
+                break;
+                
             //Checks if the two pairs are transitive (it must be)
             if (pairs[keys[i]].second == pairs[keys[j]].first 
                 //Checks if the pairs are not symmetric (it must not to be)
@@ -57,7 +61,7 @@ exports.generatePaths = (pairs) => {
     return newPairs;
 }
 
-exports.pairs = async (exchange) => {
+exports.pairs = async (exchange, exchangeId) => {
     var pairs = {};
     let symbols = exchange.symbols;
     let numSymbols = symbols.length;
@@ -73,7 +77,7 @@ exports.pairs = async (exchange) => {
             second: aux[1],
             operation: 'sell',
             price: tickers[symbols[i]].bid,
-            exchange: exchange.name,
+            exchange: exchangeId,
         };
     }
     return pairs;

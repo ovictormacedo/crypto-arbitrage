@@ -10,7 +10,8 @@
     "dotenv": "^8.2.0",
     "forever": "^1.0.0",
     "node-telegram-bot-api": "^0.40.0",
-    "query-string": "^6.9.0"
+    "query-string": "^6.9.0",
+    "sleep": "^6.1.0"
   },
   "devDependencies": {},
   "scripts": {

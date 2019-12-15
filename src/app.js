@@ -3,57 +3,36 @@ const ccxt = require ('ccxt')
 const pair = require('./controllers/Pair');
 const operationsSimulator = require('./controllers/OperationsSimulator');
 const telegram = require('./util/Telegram');
-const ticker = require('./controllers/Tickers');
+const config = require('./config');
+const fs = require('fs');
 
 async function app () {
     let exchanges = ccxt.exchanges;
-    exchanges = [
-        'binance','poloniex',
-        'hitbtc',
-    ];
+    exchanges = config.EXCHANGES;
     let numExchanges = exchanges.length;
-    let notSupportedExchanges = [
-        '_1btcxe',       'adara',      'allcoin',
-        'anxpro',        'bcex',       'bibox',
-        'bit2c',         'bitbank',    'bitbay',
-        'bitfinex',      'bitfinex2',  'bitflyer',
-        'bitforex',      'bitso',      'bitstamp',
-        'bitstamp1',     'bl3p',       'btcalpha',
-        'btcbox',        'btcchina',   'btcmarkets',
-        'btctradeim',    'btctradeua', 'buda',
-        'chilebit',      'coinbase',   'coinbaseprime',
-        'coinbasepro',   'coincheck',  'coinegg',
-        'coinexchange',  'coinfloor',  'coingi',
-        'coinmarketcap', 'coinmate',   'coinone',
-        'coinspot',      'cointiger',  'coolcoin',
-        'crex24',        'deribit',    'digifinex',
-        'dsx',           'dx',         'fcoin',
-        'fcoinjp',       'flowbtc',    'foxbit',
-        'fybse',         'gemini',     'huobipro',
-        'huobiru',       'ice3x',      'independentreserve',
-        'indodax',       'itbit',      'kraken',
-        'lbank',         'lykke',      'mandala',
-        'mercado',       'mixcoins',   'negociecoins',
-        'okcoincny',     'okex',       'okex3',
-        'paymium',       'rightbtc',   'southxchange',
-        'stronghold',    'surbitcoin', 'theocean',
-        'tidex',         'vaultoro',   'vbtc',
-        'virwox',        'whitebit',   'xbtce',
-        'yobit',         'zaif'
-    ];
     for (let i = 0; i < numExchanges; i++) {
-        if (!notSupportedExchanges.includes(exchanges[i])) {
-            try {
-                console.log("Scanning "+exchanges[i]);
-                let exchange = eval("new ccxt."+exchanges[i]+"();");
-                await exchange.loadMarkets().catch(error => console.log(error));
-                let pairs = await pair.allPairs(exchange);
-                let paths = pair.generatePaths(pairs);
-                let pathProfits = await operationsSimulator.calculatePathProfits(paths, pairs, 1000, true);
-                console.log("Alerting profits: "+await telegram.alertProfit(pathProfits));
-            } catch(exception) {
-                console.log(exchanges[i]+" not supported");
-            }
+        try {
+            console.log("Scanning "+exchanges[i]);
+            let exchange = eval("new ccxt."+exchanges[i]+"();");
+            await exchange.loadMarkets().catch(error => console.log(error));
+            let pairs = await pair.allPairs(exchange, exchanges[i]);
+            let paths = pair.generatePaths(pairs);
+            let pathProfits = await operationsSimulator.calculatePathProfits(paths, pairs, 1000, true);
+
+            //Set credentials
+            exchange.apiKey = config.CREDENTIALS[exchanges[i]].apiKey;
+            exchange.secret = config.CREDENTIALS[exchanges[i]].apiSecret;
+
+            //Send messages to telegram
+            pathProfits.forEach(async path => {
+                if (path.variation >= process.env.MIN_PROFIT) {
+                    let response = await telegram.sendMessage(JSON.stringify(path));
+                    console.log("Alerting profits: "+response.status);
+                }
+            });
+        } catch(exception) {
+            console.log(exception);
+            console.log(exchanges[i]+" not supported");
         }
     }
 
