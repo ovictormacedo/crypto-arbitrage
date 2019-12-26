@@ -16,10 +16,6 @@ async function app () {
             let pairs = await pair.allPairs(exchange, exchanges[i]);
             let paths = pair.generatePaths(pairs);
             let pathProfits = await operationsSimulator.calculatePathProfits(paths, pairs, 1000, true);
-
-            //Set credentials
-            exchange.apiKey = config.CREDENTIALS[exchanges[i]].apiKey;
-            exchange.secret = config.CREDENTIALS[exchanges[i]].apiSecret;
         } catch(exception) {
             console.log(exception);
             console.log(exchanges[i]+" not supported");
