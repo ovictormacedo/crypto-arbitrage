@@ -52,7 +52,9 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
                     },
                     "cash": amount.toFixed(10), 
                     "simulated": cash.toFixed(10),
-                    "variation": (cash.toFixed(10)/amount.toFixed(10)-1)*100
+                    "variation": (cash.toFixed(10)/amount.toFixed(10)-1)*100,
+                    "status": "open",
+                    "date": new Date()
                 };
         } else {
             return {
@@ -91,12 +93,14 @@ exports.calculatePathProfit = (path, direct, amount, seeOperations = false) => {
                     }
                 },
                 "cash": amount.toFixed(10), 
-                "simulated": -1
+                "simulated": -1,
+                "variation": 0
             };
         } else {
             return {
                 "cash": amount.toFixed(10), 
-                "simulated": -1
+                "simulated": -1,
+                "variation": 0
             };
         }
     }

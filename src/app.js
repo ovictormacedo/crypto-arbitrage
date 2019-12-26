@@ -2,9 +2,7 @@ require('dotenv').config();
 const ccxt = require ('ccxt')
 const pair = require('./controllers/Pair');
 const operationsSimulator = require('./controllers/OperationsSimulator');
-const telegram = require('./util/Telegram');
 const config = require('./config');
-const fs = require('fs');
 
 async function app () {
     let exchanges = ccxt.exchanges;
@@ -22,14 +20,6 @@ async function app () {
             //Set credentials
             exchange.apiKey = config.CREDENTIALS[exchanges[i]].apiKey;
             exchange.secret = config.CREDENTIALS[exchanges[i]].apiSecret;
-
-            //Send messages to telegram
-            pathProfits.forEach(async path => {
-                if (path.variation >= process.env.MIN_PROFIT) {
-                    let response = await telegram.sendMessage(JSON.stringify(path));
-                    console.log("Alerting profits: "+response.status);
-                }
-            });
         } catch(exception) {
             console.log(exception);
             console.log(exchanges[i]+" not supported");

@@ -17,22 +17,3 @@ exports.EXCHANGES = [
     'poloniex',
     'hitbtc2',
 ];
-
-/**
- * Credentials to access the exchanges above
- * use the names informed above
- */
-exports.CREDENTIALS = {
-    "hitbtc2": {
-        "apiKey": "", 
-        "apiSecret": ""
-    },
-    "poloniex": {
-        "apiKey": "", 
-        "apiSecret": ""
-    },
-    "binance": {
-        "apiKey": "", 
-        "apiSecret": ""
-    }
-};
