@@ -5,8 +5,7 @@ const operationsSimulator = require('./controllers/OperationsSimulator');
 const config = require('./config');
 
 async function app () {
-    let exchanges = ccxt.exchanges;
-    exchanges = config.EXCHANGES;
+    let exchanges = config.EXCHANGES;
     let numExchanges = exchanges.length;
     for (let i = 0; i < numExchanges; i++) {
         try {
