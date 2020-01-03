@@ -6,9 +6,9 @@ This project is an idea that I always had about trying to find opportunities amo
 ```
 npm install
 ````
-# Quick way to run the project in background
+# Run
 ```
-forever start src/app.js
+node src/app.js
 ```
 
 # Support the project
