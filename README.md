@@ -13,8 +13,8 @@ node src/app.js
 
 # Support the project
 
-You might support this project in many different ways, such as sending your pull request, using the code for good purposes :), or by donating BTC, or whether you prefer you may directly contact me, let's take a coffee.
+You might support this project in many different ways, such as sending your pull request, using the code for good purposes :), or whether you prefer you may directly contact me, let's take a coffee.
 
 My email: ovictormacedo@gmail.com
 
-Bitcoin Deposit Address: 3KZWbLR8td2mG2dWFyVbmPe9ZYBcbfERFQ
+BTC Address: 3KZWbLR8td2mG2dWFyVbmPe9ZYBcbfERFQ
